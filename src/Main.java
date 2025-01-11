@@ -9,6 +9,7 @@ import java.net.URLConnection;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 public class Main {
     public static void main(String[] args) {
@@ -51,9 +52,21 @@ class MyFrame extends JFrame {
                     while((line = in.readLine()) != null)
                         response.append(line);
                     in.close();
+                } else {
+                    URLConnection connection = aUrl.openConnection();
+                    PrintWriter out = new PrintWriter(connection.getOutputStream());
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    out.print(postData.getText());
+                    out.close();
+                    String line;
+                    response.setText("");
+                    while((line = in.readLine()) != null)
+                        response.append(line);
+                    in.close();
                 }
             } catch(Exception e) {
                 e.printStackTrace();
+                JOptionPane.showMessageDialog(null,"An Error Occurred.");
             }
         });
         JComboBox<String> method = new JComboBox<>(new String[] {"GET", "POST"});
