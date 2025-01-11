@@ -37,11 +37,30 @@ class MyFrame extends JFrame {
         constraints.weighty = 100;
         JTextField url = new JTextField();
         JTextField postData = new JTextField();
+        postData.setEnabled(false);
         JTextArea response = new JTextArea();
         response.setEditable(false);
         JButton action = new JButton("GET");
+        action.addActionListener(evt -> {
+            try {
+                URL aUrl = new URL(url.getText());
+                if (action.getText().equals("GET")) {
+                    response.setText("");
+                    BufferedReader in = new BufferedReader(new InputStreamReader(aUrl.openStream()));
+                    String line;
+                    while((line = in.readLine()) != null)
+                        response.append(line);
+                    in.close();
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        });
         JComboBox<String> method = new JComboBox<>(new String[] {"GET", "POST"});
-        method.addActionListener(e -> action.setText((String) method.getSelectedItem()));
+        method.addActionListener(e -> {
+            action.setText((String) method.getSelectedItem());
+            postData.setEnabled(action.getText().equals("POST"));
+        });
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.anchor = GridBagConstraints.WEST;
         add(url, constraints, 1, 0, 1, 1);
@@ -49,7 +68,7 @@ class MyFrame extends JFrame {
         add(postData, constraints, 1, 2, 1, 1);
         add(action, constraints, 0, 3, 1, 1);
         constraints.fill = GridBagConstraints.BOTH;
-        add(response, constraints, 0, 4, 2, 1);
+        add(new JScrollPane(response), constraints, 0, 4, 2, 1);
     }
     public void add(Component c, GridBagConstraints constraints, int x, int y, int w, int h) {
         constraints.gridx = x;
